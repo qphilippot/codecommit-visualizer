@@ -36,3 +36,27 @@ export function getRepositoryByName(name) {
         });
     });
 }
+
+export function getOpenPullRequest(name) {
+    return new Promise((resolve, reject) =>  {
+        codecommit.listPullRequests({
+            repositoryName: name,
+            pullRequestStatus: 'OPEN'
+        }, function (err, data) {
+            if (err) {
+                return reject(err);
+            }
+
+            Promise.all(data.pullRequestIds.map(pullRequestId => {
+                return new Promise(resolvePR => {
+                    codecommit.getPullRequest({
+                        pullRequestId
+                    }, function (err2, { pullRequest }) {
+                        if (err2) console.error(err2)
+                        resolvePR(pullRequest);
+                    });
+                });
+            })).then(resolve)
+        });
+    });
+}

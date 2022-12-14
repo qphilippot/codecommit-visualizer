@@ -1,11 +1,12 @@
 import {defineStore} from 'pinia';
-import {getAllRepositories, getRepositoryByName} from '@/services/git.service'
+import {getAllRepositories, getOpenPullRequest, getRepositoryByName} from '@/services/git.service'
 
 export const useGitStore = defineStore('git', {
     state: () => {
         return {
             _repositories: [],
-            _repositoryDetail: {}
+            _repositoryDetail: {},
+            _pendingPR: []
         }
     },
 
@@ -15,6 +16,11 @@ export const useGitStore = defineStore('git', {
             return (repositoryName) => {
                 return  state._repositoryDetail[repositoryName]
             }
+        },
+
+        openPullRequests: state => state._pendingPR,
+        openPullRequestsByRepository: state => {
+            return repositoryName => state._pendingPR.filter(pr => pr.pullRequestTargets?.[0].repositoryName === repositoryName)
         }
     },
 
@@ -22,19 +28,20 @@ export const useGitStore = defineStore('git', {
         {
             refreshRepositoriesList() {
                 getAllRepositories().then(repos => {
-                    console.log(repos);
                     this._repositories.length = 0;
+                    this._pendingPR.length = 0;
                     repos.forEach(entry => {
                         this._repositories.push(entry)
+                        getOpenPullRequest(entry.name).then(pr => {
+                            pr.forEach(_pr => {
+                                this._pendingPR.push(_pr);
+                            });
+                        })
                     });
-
-                    console.log(this._repositories)
                 });
-            }
-            ,
+            },
 
             loadRepositoryDetails(repo) {
-                console.log('loadRepositoryDetails', repo)
                 getRepositoryByName(repo).then(details => {
                     this._repositoryDetail[repo] = details;
                 });
