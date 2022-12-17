@@ -1,6 +1,10 @@
 <template>
   <table class="table">
-    <caption>Liste des repositories git visibles</caption>
+    <caption>
+      Liste des repositories git visibles.
+      <small>Dernière synchronisation : {{ props.lastResync }}</small>
+      <span @click="$emit('askResync')">refresh</span>
+    </caption>
     <thead>
     <tr>
       <th scope="col">Nom</th>
@@ -17,9 +21,15 @@
   </table>
 </template>
 
+<style scoped>
+  small {
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+</style>
 <script setup>
 import {defineProps} from "vue";
 import RepositoryDetail from "@/components/repository/RepositoryDetail";
-const props = defineProps(['repositories']);
+const props = defineProps(['repositories', 'lastResync']);
 
 </script>

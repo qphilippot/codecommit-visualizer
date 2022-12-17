@@ -6,7 +6,8 @@ export const useGitStore = defineStore('git', {
         return {
             _repositories: [],
             _repositoryDetail: {},
-            _pendingPR: []
+            _pendingPR: [],
+            _lastSync: 0
         }
     },
 
@@ -18,6 +19,7 @@ export const useGitStore = defineStore('git', {
             }
         },
 
+        lastSynchronize: state => state._lastSync,
         openPullRequests: state => state._pendingPR,
         openPullRequestsByRepository: state => {
             return repositoryName => state._pendingPR.filter(pr => pr.pullRequestTargets?.[0].repositoryName === repositoryName)
@@ -28,6 +30,7 @@ export const useGitStore = defineStore('git', {
         {
             refreshRepositoriesList() {
                 getAllRepositories().then(repos => {
+                    this._lastSync = Date.now();
                     this._repositories.length = 0;
                     this._pendingPR.length = 0;
                     repos.forEach(entry => {
