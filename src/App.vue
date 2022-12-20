@@ -20,9 +20,12 @@
 }
 
 </style>
-<script>
+<script setup>
 import FooterLayout from "@/components/pages/layout/FooterLayout";
-export default {
-  components: {FooterLayout}
-}
+import {onMounted} from "vue";
+import { useGitStore } from "@/store/git.store";
+const gitStore = useGitStore();
+onMounted(() => {
+  gitStore.refresh();
+})
 </script>

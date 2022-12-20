@@ -37,6 +37,35 @@ export function getRepositoryByName(name) {
     });
 }
 
+export function batchGetPullRequest(pullRequestIdArray) {
+    return Promise.all(pullRequestIdArray.map(getPullRequest));
+}
+
+export function getPullRequest(pullRequestId) {
+    return new Promise((resolve, reject) =>  {
+        codecommit.getPullRequest({
+            pullRequestId
+        }, function (err, data) {
+            if (err) {
+                return reject(err);
+            }
+
+            const content = data.pullRequest;
+            const { title, description } = content;
+            const pr = {
+                author: content.authorArn,
+                created_at: content.creationDate,
+                updated_at: content.lastActivityDate,
+                _id: content.pullRequestId,
+                status: content.pullRequestStatus,
+                repository: content.pullRequestTargets[0].repositoryName,
+                title,
+                description
+            };
+            resolve(pr);
+        });
+    });
+}
 export function getOpenPullRequest(name) {
     return new Promise((resolve, reject) =>  {
         codecommit.listPullRequests({
