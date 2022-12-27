@@ -3,7 +3,9 @@ import {
     batchGetPullRequest,
     getAllRepositories,
     getOpenPullRequest,
-    getRepositoryByName
+    getRepositoryByName,
+    getDiff,
+    getPullRequest
 } from '@/services/git.service'
 import {ref} from "vue";
 
@@ -15,7 +17,9 @@ export const useGitStore = defineStore('git', {
             _pendingPR: [],
             _pullRequests: {},
             lastPullRequestSync: 0,
-            _lastSync: 0
+            _lastSync: 0,
+            _changes: [],
+            isLoading: false
         }
     },
 
@@ -27,8 +31,15 @@ export const useGitStore = defineStore('git', {
             }
         },
 
+        changes: (state) => state._changes,
+
         allPullRequests: state => state._pullRequests,
         lastPullRequestSync: state => state._lastSync,
+        pullRequestByRepositoryAndId: state => {
+          return ({repository, pullRequestId}) => {
+              return state._pullRequests[`${repository}-${pullRequestId}`];
+          }
+        },
 
         lastSynchronize: state => state._lastSync,
         openPullRequests: state => state._pendingPR,
@@ -39,6 +50,10 @@ export const useGitStore = defineStore('git', {
 
     actions:
         {
+            recordPullRequestInStore(pullRequestArray) {
+                pullRequestArray.forEach(pr => this._pullRequests[`${pr.repository}-${pr._id}`] = ref(pr));
+            },
+
             refresh() {
                 getAllRepositories().then(repos => {
                     this._lastSync = Date.now();
@@ -52,7 +67,7 @@ export const useGitStore = defineStore('git', {
                             });
 
                             batchGetPullRequest(pr.map(p => p.pullRequestId)).then(data => {
-                                data.forEach(pr => this._pullRequests[`${pr.repository}-${pr._id}`] = ref(pr));
+                             this.recordPullRequestInStore(data);
                             }).catch(console.error);
                         })
                     });
@@ -79,6 +94,29 @@ export const useGitStore = defineStore('git', {
                 getRepositoryByName(repo).then(details => {
                     this._repositoryDetail[repo] = details;
                 });
+            },
+
+            async loadDifferenceInvolvedByPullRequest({repository, pullRequestId}) {
+                if (typeof this._pullRequests[`${repository}-${pullRequestId}`] === 'undefined') {
+                    await getPullRequest(pullRequestId).then(pullRequest => {
+                        this.recordPullRequestInStore([ pullRequest ]);
+                    });
+                }
+
+                const pullRequest = this._pullRequests[`${repository}-${pullRequestId}`];
+                await this.loadDifferenceBetweenCommits(pullRequest)
+            },
+
+            loadDifferenceBetweenCommits(settings) {
+                this._isLoading = true;
+                this._changes.length = 0;
+                getDiff(settings).then(data => {
+                    data.forEach(entry => {
+                        this._changes.push(entry);
+                    });
+
+                    this._isLoading = false;
+                })
             }
         }
 

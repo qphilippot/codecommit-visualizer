@@ -8,6 +8,22 @@ AWS.config.update({
 
 const codecommit = new AWS.CodeCommit();
 
+export function getDiff({ sourceCommit, destinationCommit, repository }) {
+    return new Promise((resolve, reject) =>  {
+        codecommit.getDifferences({
+            afterCommitSpecifier: destinationCommit,
+            beforeCommitSpecifier: sourceCommit,
+            repositoryName: repository
+        }, function (err, { differences}) {
+            if (err) {
+                return reject(err);
+            }
+
+            resolve(differences);
+        });
+    });
+}
+
 export function getAllRepositories() {
     return new Promise((resolve, reject) =>  {
         codecommit.listRepositories({}, function (err, data) {
@@ -56,6 +72,8 @@ export function getPullRequest(pullRequestId) {
                 author: content.authorArn,
                 created_at: content.creationDate,
                 updated_at: content.lastActivityDate,
+                sourceCommit:content.pullRequestTargets[0].destinationCommit,
+                destinationCommit:content.pullRequestTargets[0].sourceCommit,
                 _id: content.pullRequestId,
                 status: content.pullRequestStatus,
                 repository: content.pullRequestTargets[0].repositoryName,

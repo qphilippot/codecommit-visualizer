@@ -2,11 +2,21 @@
 import GoBack from "@/components/pages/widget/GoBack";
 import {useGitStore} from "@/store/git.store";
 import {computed} from "vue";
-
+import {useRouter} from "vue-router";
 const gitStore = useGitStore();
+const router = useRouter();
 
 const allPullRequest = computed(() => gitStore.allPullRequests);
 
+function goToReview(pullRequestObject) {
+  router.push({
+    name: 'review_pr',
+    params: {
+      repository: pullRequestObject.repository,
+      pullRequestId: pullRequestObject._id
+    }
+  });
+}
 </script>
 
 <!--todo add arial label and caption -->
@@ -30,7 +40,14 @@ const allPullRequest = computed(() => gitStore.allPullRequests);
         <th>{{ pullRequest.status }}</th>
         <th>{{ pullRequest.description }}</th>
         <th>{{ pullRequest.created_at }}</th>
-        <th>todo</th>
+        <th>
+          <button
+              @click="goToReview(pullRequest)"
+              role="link"
+          >
+            review
+          </button>
+        </th>
       </tr>
     </tbody>
   </table>
