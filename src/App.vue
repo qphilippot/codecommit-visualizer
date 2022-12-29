@@ -1,5 +1,5 @@
 <template>
-  <div id="app-content" class="container">
+  <div id="app-content" class="container-fluid">
     <img alt="Vue logo" src="./assets/logo.png">
     <router-view></router-view>
   </div>
