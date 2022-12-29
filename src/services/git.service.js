@@ -57,6 +57,21 @@ export function batchGetPullRequest(pullRequestIdArray) {
     return Promise.all(pullRequestIdArray.map(getPullRequest));
 }
 
+export function loadContentById(contentId, repository) {
+    return new Promise((resolve, reject) =>  {
+        codecommit.getBlob({
+            blobId: contentId,
+            repositoryName: repository
+        }, function (err, data) {
+            if (err) {
+                return reject(err);
+            }
+
+
+           resolve(new TextDecoder("utf-8").decode(data.content));
+        });
+    });
+}
 export function getPullRequest(pullRequestId) {
     return new Promise((resolve, reject) =>  {
         codecommit.getPullRequest({

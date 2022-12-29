@@ -7,6 +7,8 @@ const gitStore = useGitStore();
 const props = defineProps(['repository', 'pullRequestId']);
 const changes = computed(() => gitStore.changes);
 
+const repository = '' + props.repository;
+
 const reviewedPullRequest = computed(() => {
   return gitStore.pullRequestByRepositoryAndId(props);
 });
@@ -29,9 +31,10 @@ const reviewedPullRequest = computed(() => {
     <PromptDifferenceBetweenFiles
         v-for="change in changes"
         :key="change.path"
+        :repository="repository"
         :mode="change.changeType"
-        :before="change?.beforeBlob"
-        :after="change?.afterBlob"
+        :before="change?.beforeBlob ?? ''"
+        :after="change?.afterBlob ?? ''"
     ></PromptDifferenceBetweenFiles>
   </section>
 </template>

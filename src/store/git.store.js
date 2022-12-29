@@ -5,7 +5,7 @@ import {
     getOpenPullRequest,
     getRepositoryByName,
     getDiff,
-    getPullRequest
+    getPullRequest, loadContentById
 } from '@/services/git.service'
 import {ref} from "vue";
 
@@ -16,6 +16,7 @@ export const useGitStore = defineStore('git', {
             _repositoryDetail: {},
             _pendingPR: [],
             _pullRequests: {},
+            _content: {},
             lastPullRequestSync: 0,
             _lastSync: 0,
             _changes: [],
@@ -45,6 +46,11 @@ export const useGitStore = defineStore('git', {
         openPullRequests: state => state._pendingPR,
         openPullRequestsByRepository: state => {
             return repositoryName => state._pendingPR.filter(pr => pr.pullRequestTargets?.[0].repositoryName === repositoryName)
+        },
+        contentById: state => {
+            return (id, repository) => {
+                return  state._content[`${repository}-${id}`] ?? 'still loading';
+            }
         }
     },
 
@@ -117,6 +123,15 @@ export const useGitStore = defineStore('git', {
 
                     this._isLoading = false;
                 })
+            },
+
+            async loadContent(id, repository) {
+                const key = `${repository}-${id}`;
+                if (typeof this._content[key] === 'undefined') {
+                    await loadContentById(id, repository).then(content => {
+                        this._content[key] = ref(content);
+                    });
+                }
             }
         }
 

@@ -1,7 +1,37 @@
 <script setup>
-import { defineProps } from "vue";
-const props = defineProps(['mode', 'before', 'after']);
+import {computed, defineProps} from "vue";
+import { useGitStore } from "@/store/git.store";
+const gitStore = useGitStore();
+const props = defineProps(['mode', 'repository', 'before', 'after']);
 import { CodeDiff } from "v-code-diff";
+
+function initializeContent(blobId) {
+  if (typeof blobId === 'undefined') {
+    return '';
+  }
+
+  gitStore.loadContent(blobId, props.repository);
+  return computed(() => {
+      return gitStore.contentById(blobId, props.repository);
+    });
+}
+
+function getNamedMode(mode) {
+  if (mode === 'A') {
+    return 'add';
+  }
+
+  if (mode === 'D') {
+    return 'delete';
+  }
+
+  return 'modify'
+}
+
+const leftContent = initializeContent(props?.before?.blobId);
+const rightContent = initializeContent(props?.after?.blobId);
+const modeClass = getNamedMode(props.mode) + '-file';
+
 </script>
 <template>
   <div class="file-diff-group list-group-item list-group-item-action d-flex gap-3 py-3 px-0">
@@ -9,42 +39,31 @@ import { CodeDiff } from "v-code-diff";
       <div class="row">
         {{ props.mode }}
       </div>
-    <template v-if="props.mode === 'A' || props.mode === 'D'">
+
       <code-diff
-          :old-string="JSON.stringify(props.before, null, 4)"
-          :new-string="JSON.stringify(props.after, null, 4)"
-          :trim=true
+          :old-string="leftContent"
+          :new-string="rightContent"
           :noDiffLineFeed=true
           file-name="diff"
           :renderNothingWhenEmpty=true
           output-format="side-by-side"
-          class="add-file"
+          :class="modeClass"
       ></code-diff>
-    </template>
-
-    <template v-else>
-        <div class="w-100">
-          <code-diff
-            :old-string="JSON.stringify(props.before, null, 4)"
-            :new-string="JSON.stringify(props.after, null, 4)"
-            :trim=true
-            :noDiffLineFeed=true
-            file-name="diff"
-            output-format="side-by-side"
-          ></code-diff>
-        </div>
-
-    </template>
     </div>
   </div>
 </template>
 
 
 <style >
-.add-file .d2h-file-side-diff:nth-child(1) {
+/* override code-diff style */
+.add-file .d2h-file-side-diff:nth-child(1),
+.delete-file .d2h-file-side-diff:nth-child(2)
+{
   flex: 0;
 }
-.add-file .d2h-file-side-diff:nth-child(2) {
+.add-file .d2h-file-side-diff:nth-child(2),
+.delete-file .d2h-file-side-diff:nth-child(1)
+{
   flex:1;
 }
 .d2h-file-side-diff {
