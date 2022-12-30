@@ -3,8 +3,6 @@
     <img alt="Vue logo" src="./assets/logo.png">
     <router-view></router-view>
   </div>
-
-  <FooterLayout></FooterLayout>
 </template>
 
 
@@ -21,9 +19,9 @@
 
 </style>
 <script setup>
-import FooterLayout from "@/components/pages/layout/FooterLayout";
 import {onMounted} from "vue";
-import { useGitStore } from "@/store/git.store";
+import {useGitStore} from "@/store/git.store";
+
 const gitStore = useGitStore();
 onMounted(() => {
   gitStore.refresh();

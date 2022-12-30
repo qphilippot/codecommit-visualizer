@@ -1,7 +1,8 @@
 <script setup>
 import { useGitStore } from "@/store/git.store";
+import {computed} from "vue";
 const store = useGitStore();
-const openPR = store.openPullRequests;
+const openPR = computed(() => store.openPullRequests);
 
 </script>
 

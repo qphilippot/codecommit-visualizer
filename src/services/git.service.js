@@ -72,30 +72,58 @@ export function loadContentById(contentId, repository) {
         });
     });
 }
+
+function buildPullRequestObject(pullRequest, conflict) {
+    const { title, description } = pullRequest;
+    return  {
+        author: pullRequest.authorArn,
+        created_at: pullRequest.creationDate,
+        updated_at: pullRequest.lastActivityDate,
+        sourceCommit:pullRequest.pullRequestTargets[0].destinationCommit,
+        destinationCommit:pullRequest.pullRequestTargets[0].sourceCommit,
+        _id: pullRequest.pullRequestId,
+        status: pullRequest.pullRequestStatus,
+        conflict,
+        repository: pullRequest.pullRequestTargets[0].repositoryName,
+        title,
+        description
+    };
+}
 export function getPullRequest(pullRequestId) {
     return new Promise((resolve, reject) =>  {
         codecommit.getPullRequest({
             pullRequestId
-        }, function (err, data) {
+        }, async function (err, data) {
             if (err) {
                 return reject(err);
             }
 
             const content = data.pullRequest;
-            const { title, description } = content;
-            const pr = {
-                author: content.authorArn,
-                created_at: content.creationDate,
-                updated_at: content.lastActivityDate,
-                sourceCommit:content.pullRequestTargets[0].destinationCommit,
-                destinationCommit:content.pullRequestTargets[0].sourceCommit,
-                _id: content.pullRequestId,
-                status: content.pullRequestStatus,
-                repository: content.pullRequestTargets[0].repositoryName,
-                title,
-                description
-            };
-            resolve(pr);
+            let conflict = [];
+
+            if (content.pullRequestTargets[0].destinationCommit === content.pullRequestTargets[0].sourceCommit) {
+                conflict.push('Differences between the source branch and the destination branch cannot be displayed for this pull request. Either the source branch has no commits, has had its tip reset to the same commit as the destination branch, or the source branch has been orphaned. To fix this problem, commit and push some code to the source branch, reset the tip of the source branch, or close this pull request and create another.');
+                return resolve(buildPullRequestObject(content, conflict));
+            }
+
+
+            codecommit.getMergeConflicts({
+                destinationCommitSpecifier: content.pullRequestTargets[0].destinationCommit,
+                mergeOption: "THREE_WAY_MERGE",
+                sourceCommitSpecifier: content.pullRequestTargets[0].sourceCommit,
+                repositoryName: content.pullRequestTargets[0].repositoryName
+
+            }, async function (err2, conflictData) {
+                if (err2) console.error(err2);
+
+                if (!conflictData.mergeable) {
+                        conflict = conflictData.conflictMetadataList;
+                }
+
+                resolve(buildPullRequestObject(content, conflict));
+            });
+
+
         });
     });
 }

@@ -14,7 +14,6 @@ export const useGitStore = defineStore('git', {
         return {
             _repositories: [],
             _repositoryDetail: {},
-            _pendingPR: [],
             _pullRequests: {},
             _content: {},
             lastPullRequestSync: 0,
@@ -43,9 +42,14 @@ export const useGitStore = defineStore('git', {
         },
 
         lastSynchronize: state => state._lastSync,
-        openPullRequests: state => state._pendingPR,
+        openPullRequests: state => Object.values(state._pullRequests).filter(pr => pr.status === 'OPEN'),
         openPullRequestsByRepository: state => {
-            return repositoryName => state._pendingPR.filter(pr => pr.pullRequestTargets?.[0].repositoryName === repositoryName)
+            return repositoryName => Object.values(state._pullRequests).filter(
+                pr => (
+                        pr.repository === repositoryName &&
+                        pr.status === 'OPEN'
+                    )
+            )
         },
         contentById: state => {
             return (id, repository) => {
@@ -60,22 +64,21 @@ export const useGitStore = defineStore('git', {
                 pullRequestArray.forEach(pr => this._pullRequests[`${pr.repository}-${pr._id}`] = ref(pr));
             },
 
+            batchLoadPullRequestByRepository(repository) {
+                getOpenPullRequest(repository).then(pr => {
+                    batchGetPullRequest(pr.map(p => p.pullRequestId)).then(data => {
+                        this.recordPullRequestInStore(data);
+                    }).catch(console.error);
+                });
+            },
+
             refresh() {
                 getAllRepositories().then(repos => {
                     this._lastSync = Date.now();
                     this._repositories.length = 0;
-                    this._pendingPR.length = 0;
                     repos.forEach(entry => {
-                        this._repositories.push(entry)
-                        getOpenPullRequest(entry.name).then(pr => {
-                            pr.forEach(_pr => {
-                                this._pendingPR.push(_pr);
-                            });
-
-                            batchGetPullRequest(pr.map(p => p.pullRequestId)).then(data => {
-                             this.recordPullRequestInStore(data);
-                            }).catch(console.error);
-                        })
+                        this._repositories.push(entry);
+                        this.batchLoadPullRequestByRepository(entry.name);
                     });
                 });
             },
@@ -84,14 +87,9 @@ export const useGitStore = defineStore('git', {
                 getAllRepositories().then(repos => {
                     this._lastSync = Date.now();
                     this._repositories.length = 0;
-                    this._pendingPR.length = 0;
                     repos.forEach(entry => {
                         this._repositories.push(entry)
-                        getOpenPullRequest(entry.name).then(pr => {
-                            pr.forEach(_pr => {
-                                this._pendingPR.push(_pr);
-                            });
-                        })
+                        this.batchLoadPullRequestByRepository(entry.name);
                     });
                 });
             },

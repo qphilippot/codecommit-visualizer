@@ -13,17 +13,31 @@ const reviewedPullRequest = computed(() => {
   return gitStore.pullRequestByRepositoryAndId(props);
 });
 
+const hasConflict = computed(() => reviewedPullRequest.value?.conflict.length > 0)
+
 </script>
 
 <!--todo add arial label and caption -->
 <template>
   <GoBack></GoBack>
-  <h1>
-
+  <div class="head-wrapper">
     <template v-if="reviewedPullRequest">
-      {{ reviewedPullRequest.title }}
+      <h1>
+        {{ reviewedPullRequest.title }}
+      </h1>
+
+      <section class="tag-line">
+        <button role="button" class="btn btn-danger conflict-btn" v-if="hasConflict">
+          Conflict <span class="badge bg-secondary">{{ reviewedPullRequest.conflict.length }}</span>
+        </button>
+      </section>
+
     </template>
-  </h1>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" v-if="hasConflict">
+      <p>{{reviewedPullRequest.conflict[0]}}</p>
+    </div>
+  </div>
+
   <section class="list-group">
     <div v-for="change in changes" :key="change.path" class="file-diff-group list-group-item list-group-item-action d-flex gap-3 py-3">
       {{ change }}
@@ -39,4 +53,21 @@ const reviewedPullRequest = computed(() => {
   </section>
 </template>
 <style scoped>
+.conflict-btn {
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 2px 5px;
+}
+
+.tag-line {
+  margin: 20px 0;
+  width: calc(100% - 40px);
+  display: flex;
+  justify-content: left;
+}
+
+.head-wrapper {
+  width: 80%;
+  margin: auto;
+}
 </style>
