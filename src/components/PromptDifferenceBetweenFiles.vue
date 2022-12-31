@@ -36,9 +36,15 @@ const modeClass = getNamedMode(props.mode) + '-file';
 <template>
   <div class="file-diff-group list-group-item list-group-item-action d-flex gap-3 py-3 px-0">
     <div class="container-fluid">
-      <div class="row">
-        {{ props.mode }}
+
+      <div class="line-before-diff">
+        <div class="tag-diff">
+          <span v-if="props.mode === 'A'" class="badge bg-primary">New</span>
+        </div>
+        <p>{{ props?.after?.path }}</p>
       </div>
+
+
 
       <code-diff
           :old-string="leftContent"
@@ -73,5 +79,14 @@ const modeClass = getNamedMode(props.mode) + '-file';
 .hljs-string {
   line-height: 1.2rem;
   font-size: 1.2rem;
+}
+
+.line-before-diff {
+  display: flex;
+}
+
+.line-before-diff > p {
+  flex: 1;
+  flex-grow: 1;
 }
 </style>

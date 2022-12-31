@@ -3,6 +3,7 @@ import RepositoryList from '@/components/repository/RepositoryList'
 import {useGitStore} from "@/store/git.store";
 import {computed, ref, watch} from "vue";
 import OpenPullRequestInfoBanner from "@/components/pull-request/OpenPullRequestInfoBanner";
+import DashBoardLayout from "@/components/pages/layout/DashBoardLayout";
 
 const store = useGitStore();
 const repositories = store.repositories;
@@ -27,11 +28,25 @@ async function onResyncAsked() {
 </script>
 
 <template>
-  <OpenPullRequestInfoBanner></OpenPullRequestInfoBanner>
+  <DashBoardLayout>
+    <template #alert-area>
+      <OpenPullRequestInfoBanner></OpenPullRequestInfoBanner>
+    </template>
 
-  <RepositoryList
-      :repositories="repositories"
-      :lastResync="formattedLastSync"
-      @askResync="onResyncAsked()"
-  />
+    <template #content>
+      <div class="content">
+        <RepositoryList
+            class="container content"
+            :repositories="repositories"
+            :lastResync="formattedLastSync"
+            @askResync="onResyncAsked()"
+        />
+      </div>
+    </template>
+  </DashBoardLayout>
 </template>
+
+<style scoped>
+
+
+</style>

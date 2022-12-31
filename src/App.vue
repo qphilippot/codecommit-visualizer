@@ -1,6 +1,20 @@
+<script setup>
+import {onMounted} from "vue";
+import {useGitStore} from "@/store/git.store";
+import SideBar from "@/components/pages/widget/SideBar";
+
+import { useRoute } from "vue-router";
+const route = useRoute();
+
+const gitStore = useGitStore();
+onMounted(() => {
+  gitStore.refresh();
+})
+</script>
+
 <template>
-  <div id="app-content" class="container-fluid">
-    <img alt="Vue logo" src="./assets/logo.png">
+  <div id="page-content">
+    <SideBar :currentRoute="route.name"></SideBar>
     <router-view></router-view>
   </div>
 </template>
@@ -13,17 +27,10 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  padding-top: 60px;
 }
 
+#page-content {
+  display: flex;
+}
 </style>
-<script setup>
-import {onMounted} from "vue";
-import {useGitStore} from "@/store/git.store";
 
-const gitStore = useGitStore();
-onMounted(() => {
-  gitStore.refresh();
-})
-</script>
