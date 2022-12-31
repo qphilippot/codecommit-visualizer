@@ -1,9 +1,9 @@
 <script setup>
-import GoBack from "@/components/pages/widget/GoBack";
+import GoBack from "@/components/GoBack";
 import {useGitStore} from "@/store/git.store";
 import {computed} from "vue";
 import {useRouter} from "vue-router";
-import DashBoardLayout from "@/components/pages/layout/DashBoardLayout";
+import DashBoardLayout from "@/components/layout/DashBoardLayout";
 import PullRequestStatus from "@/components/pull-request/PullRequestStatus";
 const gitStore = useGitStore();
 const router = useRouter();

@@ -1,6 +1,6 @@
 <script setup>
-import GoBack from "@/components/pages/widget/GoBack";
-import DashBoardLayout from "@/components/pages/layout/DashBoardLayout";
+import GoBack from "@/components/GoBack";
+import DashBoardLayout from "@/components/layout/DashBoardLayout";
 import {useGitStore} from "@/store/git.store";
 import {computed, defineProps} from "vue";
 import PromptDifferenceBetweenFiles from "@/components/PromptDifferenceBetweenFiles";

@@ -3,7 +3,7 @@ import RepositoryList from '@/components/repository/RepositoryList'
 import {useGitStore} from "@/store/git.store";
 import {computed, ref, watch} from "vue";
 import OpenPullRequestInfoBanner from "@/components/pull-request/OpenPullRequestInfoBanner";
-import DashBoardLayout from "@/components/pages/layout/DashBoardLayout";
+import DashBoardLayout from "@/components/layout/DashBoardLayout";
 
 const store = useGitStore();
 const repositories = store.repositories;

@@ -1,11 +1,14 @@
 <script setup>
 import {onMounted} from "vue";
 import {useGitStore} from "@/store/git.store";
-import SideBar from "@/components/pages/widget/SideBar";
+import { useSidebarStore } from "@/store/dashboard.store";
+import SideBar from "@/components/sidebar/SideBar";
+
 
 import { useRoute } from "vue-router";
 const route = useRoute();
 
+const sidebarStore = useSidebarStore();
 const gitStore = useGitStore();
 onMounted(() => {
   gitStore.refresh();
@@ -14,7 +17,10 @@ onMounted(() => {
 
 <template>
   <div id="page-content">
-    <SideBar :currentRoute="route.name"></SideBar>
+    <SideBar
+        :currentRoute="route.name"
+        :width="sidebarStore.sidebarWidth"
+    ></SideBar>
     <router-view></router-view>
   </div>
 </template>
