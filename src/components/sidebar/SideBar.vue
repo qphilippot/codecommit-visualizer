@@ -100,6 +100,7 @@ const isOpen = computed(() => {
 .sidebar {
   transition: width 0.7s;
   overflow: hidden;
+  font-size: 1.25rem;
 }
 hr {
   margin: 35px 0;

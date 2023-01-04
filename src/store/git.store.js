@@ -5,7 +5,7 @@ import {
     getOpenPullRequest,
     getRepositoryByName,
     getDiff,
-    getPullRequest, loadContentById
+    getPullRequest, loadContentById, mergePullRequestByThreeWay
 } from '@/services/git.service'
 import {ref} from "vue";
 
@@ -130,6 +130,15 @@ export const useGitStore = defineStore('git', {
                         this._content[key] = ref(content);
                     });
                 }
+            },
+
+            async mergePullRequest(pullRequestId, repository) {
+                await mergePullRequestByThreeWay({
+                    pullRequestId,
+                    repository
+                });
+
+                this.batchLoadPullRequestByRepository(repository);
             }
         }
 

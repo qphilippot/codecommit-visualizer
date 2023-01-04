@@ -1,5 +1,6 @@
 <script setup>
-import { defineProps } from "vue";
+import {defineProps} from "vue";
+
 const props = defineProps({
   usePadding: {
     type: Boolean,
@@ -11,10 +12,10 @@ const props = defineProps({
 <template>
   <div class="w-100">
     <slot name="alert-area"></slot>
-    <section class="container-fluid">
+    <section>
       <div
           class="content"
-          :class="props.usePadding ? 'w-85' : 'w-100'"
+          :class="props.usePadding ? 'reduced' : 'w-100'"
       >
         <slot name="content"></slot>
       </div>
@@ -27,12 +28,34 @@ const props = defineProps({
 <style scoped>
 .content {
   background: white;
-  padding: 40px;
-  border-radius: 5px;
   margin: auto;
+  position: relative;
   margin-top: 100px;
+  padding: 40px 2%;
+  width: 100%;
 }
-.w-85 {
-  width: 85%;
+
+@media (min-width: 1400px) {
+  .reduced {
+    width: 85%;
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1400px) {
+  .reduced {
+    width: 95%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .reduced {
+    border-radius: 5px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .reduced {
+    width: 100%;
+  }
 }
 </style>

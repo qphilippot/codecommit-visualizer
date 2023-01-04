@@ -1,6 +1,8 @@
 
 <template>
-<button @click="goBack">go back</button>
+<button @click="goBack">
+  <i class="fa-solid fa-chevron-left"></i> back
+</button>
 </template>
 
 <script setup>
@@ -12,5 +14,17 @@ const goBack = function () {
 </script>
 
 <style scoped>
+button {
+  background: none;
+  border: none;
+  float: left;
+  margin-left: 50px;
+  margin-top: 15px;
+  font-size: 1.25rem;
+}
+
+button > i {
+  margin-right: 5px;
+}
 
 </style>

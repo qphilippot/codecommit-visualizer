@@ -5,23 +5,14 @@ const props = defineProps([ 'status']);
 
 
 <template>
-  <div v-if="props.status === 'OPEN'">
-    <span class="badge rounded-pill text-bg-info">open</span>
-  </div>
-
-  <div v-else-if="props.status === 'MERGED'">
-    <span class="badge rounded-pill text-bg-success">merged</span>
-  </div>
-  <div v-else-if="props.status === 'CLOSED'">
-    <span class="badge rounded-pill text-bg-danger">closed</span>
-  </div>
+    <span v-if="props.status === 'OPEN'" class="badge bg-primary">open</span>
+    <span  v-else-if="props.status === 'MERGED'" class="badge text-bg-success">merged</span>
+    <span v-else-if="props.status === 'CLOSED'" class="badge text-bg-secondary">closed</span>
 </template>
 
 <style scoped>
 .badge {
   color: white !important;
-  text-transform: uppercase;
-  font-weight: 500;
 }
 
 </style>

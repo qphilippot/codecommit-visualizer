@@ -2,6 +2,7 @@
 import RepositoryList from '@/components/repository/RepositoryList'
 import {useGitStore} from "@/store/git.store";
 import {computed, ref, watch} from "vue";
+import { formatDate } from "@/services/date.helper";
 import OpenPullRequestInfoBanner from "@/components/pull-request/OpenPullRequestInfoBanner";
 import DashBoardLayout from "@/components/layout/DashBoardLayout";
 
@@ -17,10 +18,6 @@ watch(
     }
 );
 
-
-function formatDate(timestamp) {
-  return new Date(timestamp).toLocaleString()
-}
 
 async function onResyncAsked() {
   await store.refreshRepositoriesList();

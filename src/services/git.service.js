@@ -8,13 +8,13 @@ AWS.config.update({
 
 const codecommit = new AWS.CodeCommit();
 
-export function getDiff({ sourceCommit, destinationCommit, repository }) {
-    return new Promise((resolve, reject) =>  {
+export function getDiff({sourceCommit, destinationCommit, repository}) {
+    return new Promise((resolve, reject) => {
         codecommit.getDifferences({
             afterCommitSpecifier: destinationCommit,
             beforeCommitSpecifier: sourceCommit,
             repositoryName: repository
-        }, function (err, { differences}) {
+        }, function (err, {differences}) {
             if (err) {
                 return reject(err);
             }
@@ -25,7 +25,7 @@ export function getDiff({ sourceCommit, destinationCommit, repository }) {
 }
 
 export function getAllRepositories() {
-    return new Promise((resolve, reject) =>  {
+    return new Promise((resolve, reject) => {
         codecommit.listRepositories({}, function (err, data) {
             if (err) {
                 return reject(err);
@@ -40,7 +40,7 @@ export function getAllRepositories() {
 }
 
 export function getRepositoryByName(name) {
-    return new Promise((resolve, reject) =>  {
+    return new Promise((resolve, reject) => {
         codecommit.getRepository({
             repositoryName: name
         }, function (err, data) {
@@ -58,7 +58,7 @@ export function batchGetPullRequest(pullRequestIdArray) {
 }
 
 export function loadContentById(contentId, repository) {
-    return new Promise((resolve, reject) =>  {
+    return new Promise((resolve, reject) => {
         codecommit.getBlob({
             blobId: contentId,
             repositoryName: repository
@@ -68,19 +68,19 @@ export function loadContentById(contentId, repository) {
             }
 
 
-           resolve(new TextDecoder("utf-8").decode(data.content));
+            resolve(new TextDecoder("utf-8").decode(data.content));
         });
     });
 }
 
 function buildPullRequestObject(pullRequest, conflict) {
-    const { title, description } = pullRequest;
-    return  {
+    const {title, description} = pullRequest;
+    return {
         author: pullRequest.authorArn,
         created_at: pullRequest.creationDate,
         updated_at: pullRequest.lastActivityDate,
-        sourceCommit:pullRequest.pullRequestTargets[0].destinationCommit,
-        destinationCommit:pullRequest.pullRequestTargets[0].sourceCommit,
+        sourceCommit: pullRequest.pullRequestTargets[0].destinationCommit,
+        destinationCommit: pullRequest.pullRequestTargets[0].sourceCommit,
         _id: pullRequest.pullRequestId,
         status: pullRequest.pullRequestStatus,
         conflict,
@@ -89,8 +89,9 @@ function buildPullRequestObject(pullRequest, conflict) {
         description
     };
 }
+
 export function getPullRequest(pullRequestId) {
-    return new Promise((resolve, reject) =>  {
+    return new Promise((resolve, reject) => {
         codecommit.getPullRequest({
             pullRequestId
         }, async function (err, data) {
@@ -117,7 +118,7 @@ export function getPullRequest(pullRequestId) {
                 if (err2) console.error(err2);
 
                 if (!conflictData.mergeable) {
-                        conflict = conflictData.conflictMetadataList;
+                    conflict = conflictData.conflictMetadataList;
                 }
 
                 resolve(buildPullRequestObject(content, conflict));
@@ -127,8 +128,29 @@ export function getPullRequest(pullRequestId) {
         });
     });
 }
+
+export function mergePullRequestByThreeWay({
+   pullRequestId,
+   repository
+}) {
+    return new Promise((resolve, reject) => {
+        codecommit.mergePullRequestByThreeWay({
+            repositoryName: repository,
+            pullRequestId
+        }, function (err, data) {
+            if (err) {
+                console.error(err);
+                return reject(err);
+            }
+
+           console.log(data);
+            resolve(data)
+        });
+    });
+}
+
 export function getOpenPullRequest(name) {
-    return new Promise((resolve, reject) =>  {
+    return new Promise((resolve, reject) => {
         codecommit.listPullRequests({
             repositoryName: name,
             pullRequestStatus: 'OPEN'
@@ -142,7 +164,7 @@ export function getOpenPullRequest(name) {
                 return new Promise(resolvePR => {
                     codecommit.getPullRequest({
                         pullRequestId
-                    }, function (err2, { pullRequest }) {
+                    }, function (err2, {pullRequest}) {
                         if (err2) console.error(err2)
                         resolvePR(pullRequest);
                     });
