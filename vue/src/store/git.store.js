@@ -6,7 +6,7 @@ import {
     getRepositoryByName,
     getDiff,
     getPullRequest, loadContentById, mergePullRequestByThreeWay
-} from '../../../services/git.service'
+} from '../../../services/git.service.ts'
 import {ref} from "vue";
 
 export const useGitStore = defineStore('git', {
