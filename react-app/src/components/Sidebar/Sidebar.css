@@ -1,0 +1,43 @@
+.sidebar {
+    transition: width 0.7s;
+    overflow: hidden;
+    font-size: 1.25rem;
+}
+
+.sidebar hr {
+    margin: 35px 0;
+}
+
+
+.toggle-btn {
+    position: fixed;
+    height: 32px;
+    top: calc(51px);
+    z-index: 10;
+    width: 30px;
+    border-radius: 10px 0 0 10px;
+    color: white;
+    user-select: none;
+    border: 1px solid #585b5e;
+    border-right: 0;
+    background: #212529;
+    transition: left 0.7s, border-radius 0.7s;
+}
+
+.toggle-btn.close {
+    left: 0;
+    border-radius: 0 10px 10px 0;
+    border-left: none;
+}
+
+.toggle-btn > i {
+    width: 32px;
+    height: 30px;
+    line-height: 30px;
+    transform: rotate(180deg);
+    transition: transform 0.7s;
+}
+
+.toggle-btn > i.rotate-180 {
+    transform: rotate(0deg);
+}
