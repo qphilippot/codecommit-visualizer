@@ -5,7 +5,7 @@ import {computed} from "vue";
 import {useRouter} from "vue-router";
 import DashBoardLayout from "@/components/layout/DashBoardLayout";
 import PullRequestStatus from "@/components/pull-request/PullRequestStatus";
-import { formatDate } from "@/services/date.helper";
+import { formatDate } from "../../../services/date.helper";
 
 const gitStore = useGitStore();
 const router = useRouter();
