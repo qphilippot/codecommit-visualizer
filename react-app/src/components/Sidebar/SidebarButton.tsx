@@ -1,26 +1,30 @@
-// @ts-ignore
+import {Link} from 'react-router-dom';
 import styled from 'styled-components';
 
 type SidebarButtonProperties = {
     isSelected: boolean,
     icon: JSX.Element,
-    label: string
+    label: string,
+    route: string
 };
 
 const ButtonIcon = styled.div`
-    margin-right: 5px;
-    float: left
+  margin-right: 5px;
+  float: left
 `
 
-function SidebarButton({isSelected, icon, label}: SidebarButtonProperties) {
+function SidebarButton({icon, label, route, isSelected}: SidebarButtonProperties) {
+
     return (
-        <a
+        // <p>toto</p>
+        <Link
+            to={route}
             className={isSelected ? 'nav-link active' : 'nav-link text-white'}
             aria-current={isSelected ? 'page' : undefined}
         >
-            <ButtonIcon>{ icon }</ButtonIcon>
-            { label }
-        </a>
+            <ButtonIcon>{icon}</ButtonIcon>
+            {label}
+        </Link>
     )
 }
 

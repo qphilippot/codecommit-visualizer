@@ -4,26 +4,23 @@ import ToggleSidebarButton from './ToggleSidebarButton';
 
 import './Sidebar.css';
 
-type SidebarProperties = {
-    currentRoute: string,
-    width: number
+
+export type SidebarLinkProperties = {
+    route: string,
+    icon: JSX.Element,
+    text: string
 };
 
-const routing = [
-    {
-        routeName: 'home',
-        icon: <i className="fa-solid fa-book-bookmark"></i>,
-        text: 'Repositories'
-    },
 
-    {
-        routeName: 'open-pull-request',
-        icon: <i className="fa-solid fa-code-pull-request"></i>,
-        text: 'Pull Request'
-    }
-];
+type SidebarProperties = {
+    currentRoute: string,
+    width: number,
+    routing: SidebarLinkProperties[]
+};
 
-function Sidebar({currentRoute, width}: SidebarProperties) {
+
+
+function Sidebar({currentRoute, width, routing}: SidebarProperties) {
 
     return (
         <SidebarLayout width={width}>
@@ -44,9 +41,10 @@ function Sidebar({currentRoute, width}: SidebarProperties) {
 
                     {routing.map((entry, index) => {
                         return (
-                            <li className="nav-item" key={entry.routeName}>
+                            <li className="nav-item" key={entry.route}>
                                 <SidebarButton
-                                    isSelected={index % 2 === 0}
+                                    isSelected={currentRoute === entry.route }
+                                    route={entry.route}
                                     icon={entry.icon}
                                     label={entry.text}
                                 />
